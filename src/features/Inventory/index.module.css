@@ -1,0 +1,12 @@
+.labHeader{
+    width: 50vw;
+}
+
+.hoverLab{
+    cursor: pointer;
+}
+
+.activeLab{
+    background-color: #cfe4f5;
+    font-weight: bold;
+}
