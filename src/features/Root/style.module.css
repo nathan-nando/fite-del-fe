@@ -41,6 +41,19 @@
 }
 
 
+tr{
+    text-align: center;
+    vertical-align: middle;
+    height: 80px;
+}
+th{
+    height: 80px;
+}
+
+td{
+    height: 80px;
+}
+
 @font-face {
     font-family: 'Lato';
     src: local('Lato'), url("../../assets/fonts/Lato/Lato-Regular.ttf");

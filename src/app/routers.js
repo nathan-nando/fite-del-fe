@@ -2,7 +2,7 @@ import {createBrowserRouter} from "react-router-dom";
 import {Root} from "../features/Root/Root.jsx";
 import {Inventory} from "../features/Inventory/Inventory.jsx";
 import {Peminjaman} from "../features/Peminjaman/Peminjaman.jsx";
-import {Pengadaan} from "../features/PengadaanAlatBaru/Pengadaan.jsx";
+import {Laboran} from "../features/Laboran/Laboran.jsx";
 
 export const routers = createBrowserRouter([
     {
@@ -18,8 +18,8 @@ export const routers = createBrowserRouter([
                 Component: Peminjaman,
             },
             {
-                path: "/pengadaan-alat-baru",
-                Component: Pengadaan,
+                path: "/laboran",
+                Component: Laboran,
             }
         ]
     }

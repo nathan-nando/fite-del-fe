@@ -2,9 +2,11 @@ import {Col, Container, Nav, Navbar,} from "react-bootstrap";
 
 import styles from "./style.module.css";
 import {Link, Outlet, useLocation} from "react-router-dom";
+import {useSelector} from "react-redux";
 
 export const Root = () => {
     const loc = useLocation();
+    const state = useSelector((state)=>state.globalState);
 
     return <Container fluid className={styles.body}>
         <Navbar expand="lg" className={styles.navbar} variant={"dark"} expanded={"lg"}>
@@ -14,13 +16,14 @@ export const Root = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav activeKey={loc.pathname}>
                         <Nav.Link href="/peminjaman" className={"ms-4"}>Peminjaman</Nav.Link>
-                        <Nav.Link href="/pengadaan-alat-baru" className={"ms-4"}>Pengadaan Alat Baru</Nav.Link>
+                        <Nav.Link href="/laboran" className={"ms-4"}>Laboran</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>
         </Navbar>
-        <Col className={styles.pageWrapper}>
+        <Container className={styles.pageWrapper}>
+            {/*{state.modeModal}*/}
             <Outlet/>
-        </Col>
+        </Container>
     </Container>
 }
