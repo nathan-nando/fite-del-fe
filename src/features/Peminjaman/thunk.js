@@ -13,3 +13,12 @@ export const createLoan = createAsyncThunk('loan/Create', async (payload, {rejec
         dispatch(fetchInventories())
     }
 })
+
+export const fetchLoans = createAsyncThunk('loan/FetchAll', async (_, {rejectWithValue})=>{
+    try{
+        const result = await loanServices.getAll()
+        return result.data.data
+    } catch (e) {
+        return rejectWithValue(e)
+    }
+})

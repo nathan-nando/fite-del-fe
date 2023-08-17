@@ -8,7 +8,7 @@ export const stores = configureStore({
     reducer: {
         inventoryState: inventoryReducer,
         globalState: globalReducer,
-        loanReducer: loanReducer,
+        loanState: loanReducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false})
 });

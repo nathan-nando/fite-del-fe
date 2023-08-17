@@ -10,25 +10,27 @@ import dateFormat from "dateformat";
 import {ModalCustom} from "../../components/ModalCustom/ModalCustom.jsx";
 import {hideModal, showModal} from "../Root/slice.js";
 import {createLoan} from "../Peminjaman/thunk.js";
+import {useLocation, useNavigate} from "react-router-dom";
 
 export const Inventory = () => {
     const state = useSelector((state) => state.inventoryState);
     const globalState = useSelector((state) => state.globalState);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(fetchInventories())
     }, [dispatch]);
 
     const tableByMode = () => {
-        return state.searchedInventory.map((value, index, array)=>{
+        return state.searchedInventory.map((value, index, array) => {
             if (value.lab === listLab[state.selectedLab]) {
                 return <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{value.name}</td>
                     <td>{value.dateIn.map((v) => {
                         return <li key={v} style={{listStyle: "none", display: "inline-block"}}><Badge
-                            className={"pb-2 pt-2 ps-4 pe-4 me-2"} pill
+                            className={"pb-2 pt-2 ps-4 pe-4 me-2"}
                             bg={"success"}>{dateFormat(v, "yyyy")}</Badge></li>
                     })}</td>
                     <td>{value.total}</td>
@@ -51,13 +53,18 @@ export const Inventory = () => {
                 personName: state.form.personName || "",
                 personID: state.form.personID || "",
                 borrowedFrom: state.form.borrowedFrom,
+                description: state.form.description,
                 dateLoan: state.form.dateLoan,
                 dateReturn: state.form.dateReturn,
+                total: Number(state.form.total),
                 status: "pending",
                 inventory: state.selectedInventory._id,
-            }));
+            })).then(() => {
+                dispatch(hideModal())
+                navigate("/peminjaman")
+            });
         }
-        dispatch(hideModal())
+
     }
 
     return <>
@@ -81,7 +88,7 @@ export const Inventory = () => {
                             <InputGroup.Text><i className={"bi bi-search"}></i></InputGroup.Text>
                             <FormControl
                                 placeholder="Cari nama peralatan"
-                                onChange={(e)=>{
+                                onChange={(e) => {
                                     dispatch(search(e.target.value))
                                 }}
                             />
@@ -129,9 +136,17 @@ export const Inventory = () => {
                 </Form.Group>
                 <Form.Group className={"mb-3 ms-3"}>
                     <Form.Label style={{fontWeight: "bold"}}>
+                        Deskripsi peminjaman
+                    </Form.Label>
+                    <FormControl type={"text"} placeholder={"Masukkan deskripsi"} onChange={(e) => {
+                        dispatch(handlerForm({description: e.target.value}))
+                    }} value={state.form.description} required={true}></FormControl>
+                </Form.Group>
+                <Form.Group className={"mb-3 ms-3"}>
+                    <Form.Label style={{fontWeight: "bold"}}>
                         Dipinjam dari
                     </Form.Label>
-                    <FormControl type={"text"} placeholder={"Masukkan nama"} onChange={(e) => {
+                    <FormControl type={"text"} required={true} placeholder={"Masukkan nama"} onChange={(e) => {
                         dispatch(handlerForm({borrowedFrom: e.target.value}))
                     }} value={state.form.borrowedFrom}></FormControl>
                 </Form.Group>
@@ -150,6 +165,15 @@ export const Inventory = () => {
                     <FormControl type={"date"} onChange={(e) => {
                         dispatch(handlerForm({dateReturn: e.target.value}))
                     }} value={state.form.dateReturn}></FormControl>
+                </Form.Group>
+
+                <Form.Group className={"mt-4 mb-3 ms-3 col-lg-4"}>
+                    <Form.Label style={{fontWeight: "bold"}}>
+                        Jumlah alat
+                    </Form.Label>
+                    <FormControl min={1} max={state.selectedInventory.total} type={"number"} onChange={(e) => {
+                        dispatch(handlerForm({total: e.target.value}))
+                    }} value={state.form.total} placeholder={"Masukkan jumlah"}></FormControl>
                 </Form.Group>
             </div>
         </ModalCustom>

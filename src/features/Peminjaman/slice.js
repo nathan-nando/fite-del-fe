@@ -1,8 +1,10 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {createLoan} from "./thunk.js";
+import {createLoan, fetchLoans} from "./thunk.js";
 
 const initialState = {
     selectedLoan: {},
+    searchedLoans: [],
+    statusLoan: "menunggu",
     Loans: [],
     loading: false,
     error: null,
@@ -15,6 +17,13 @@ const slice = createSlice({
         changeSelectedLoan(state, action) {
             state.selectedLoan = action.payload;
         },
+        changeSelectedStatus(state, action){
+            state.statusLoan = action.payload;
+        },
+        search(state, action){
+            state.searchedLoans = state.Loans.filter(v => v.personName.toLowerCase().includes(action.payload.toLowerCase()))
+
+        }
 
     },
     extraReducers: (builder) => {
@@ -28,9 +37,22 @@ const slice = createSlice({
             state.loading = false;
             state.error = action.error.message;
         })
+
+        builder.addCase(fetchLoans.pending, (state) => {
+            state.loading = true;
+        })
+        builder.addCase(fetchLoans.fulfilled, (state, action) => {
+            state.loading = false;
+            state.Loans = action.payload;
+            state.searchedLoans = action.payload;
+        })
+        builder.addCase(fetchLoans.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
+        })
     }
 });
 
-export const {changeSelectedLoan} = slice.actions
+export const {changeSelectedStatus, search, changeSelectedLoan} = slice.actions
 
 export default slice.reducer
