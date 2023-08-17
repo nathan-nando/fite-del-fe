@@ -20,7 +20,7 @@ export const Login = () => {
 
     }
     return <div className={"col-lg-6 mx-auto text-center mt-5"}>
-        <div className={"shadow p-5"} style={{height: "39vh"}}>
+        <div className={"shadow-sm border p-5"} style={{height: "39vh"}}>
             <h5>Silahkan Login</h5>
             <div className={"col-lg-10 mx-auto"}>
                 <Form className={"mt-5"} onSubmit={e => handlerSubmit(e)}>

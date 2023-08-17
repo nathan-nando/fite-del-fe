@@ -40,7 +40,7 @@ export const Laboran = () => {
                 return <tr key={index}>
                     <td>{value.personName}</td>
                     <td>{value.description}</td>
-                    <td>{value.inventory.name}</td>
+                    <td>{value.inventory ?  value.inventory.name : ""}</td>
                     <td>{value.total}</td>
                     <td>
                         <Col className={"col-lg-6 mx-auto"}>

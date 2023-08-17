@@ -19,31 +19,34 @@ export const fetchInventoryByID = createAsyncThunk('inventory/FetchByID', async 
     }
 })
 
-export const createInventory = createAsyncThunk('inventory/create', async (_, payload, {rejectWithValue})=>{
+export const createInventory = createAsyncThunk('inventory/create', async (payload, {rejectWithValue, dispatch})=>{
     try{
         const result = await inventoryServices.createOne(payload)
         return result.data
     } catch (e) {
         return rejectWithValue(e)
+    } finally {
+        dispatch(fetchInventories())
     }
 })
-
-export const updateInventory = createAsyncThunk('inventory/update', async (param, {rejectWithValue})=>{
-    const id = param.id;
-    const payload = param.payload;
+export const updateInventory = createAsyncThunk('inventory/update', async (payload, {dispatch, rejectWithValue})=>{
     try{
-        const result = await inventoryServices.updateOne(id, payload)
+        const result = await inventoryServices.updateOne(payload._id, payload)
         return result.data
     } catch (e) {
         return rejectWithValue(e)
+    } finally {
+        await dispatch(fetchInventories())
     }
 })
 
-export const deleteInventory = createAsyncThunk('inventory/delete', async (id, {rejectWithValue})=>{
+export const deleteInventory = createAsyncThunk('inventory/delete', async (id, {rejectWithValue, dispatch})=>{
     try{
         const result = await inventoryServices.deleteOne(id)
         return result.data
     } catch (e) {
         return rejectWithValue(e)
+    } finally {
+        await dispatch(fetchInventories())
     }
 })

@@ -1,16 +1,24 @@
 import styles from "./index.module.css"
 import {listLab} from "./data.js";
-import {Badge, Button, Form, FormControl, InputGroup, Row, Table} from "react-bootstrap";
+import {Button, Col, Form, FormControl, InputGroup, Modal, Row, Table} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {changeSelectedInventory, changeSelectedLab, handlerForm, search} from "./slice.js";
-import {useEffect} from "react";
-import {fetchInventories} from "./thunk.js";
+import {
+    changeSelectedInventory,
+    changeSelectedLab,
+    clearFormLab,
+    handlerForm,
+    handlerFormLab,
+    search, setFormUpdate
+} from "./slice.js";
+import {useEffect, useState} from "react";
+import {createInventory, deleteInventory, fetchInventories, updateInventory} from "./thunk.js";
 import {Loading} from "../../components/Loading/Loading.jsx";
 import dateFormat from "dateformat";
 import {ModalCustom} from "../../components/ModalCustom/ModalCustom.jsx";
 import {hideModal, showModal} from "../Root/slice.js";
 import {createLoan} from "../Peminjaman/thunk.js";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {optionLab} from "./option.js";
 
 export const Inventory = () => {
     const state = useSelector((state) => state.inventoryState);
@@ -22,28 +30,67 @@ export const Inventory = () => {
         dispatch(fetchInventories())
     }, [dispatch]);
 
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [modeFormLab, setModeFormLab] = useState("create")
+
+    const changeModeToCreate = () => setModeFormLab("create")
+    const changeModeToUpdate = () => setModeFormLab("update")
     const tableByMode = () => {
         return state.searchedInventory.map((value, index, array) => {
             if (value.lab === listLab[state.selectedLab]) {
                 return <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{value.name}</td>
-                    <td>{value.dateIn.map((v) => {
-                        return <li key={v} style={{listStyle: "none", display: "inline-block"}}><Badge
-                            className={"pb-2 pt-2 ps-4 pe-4 me-2"}
-                            bg={"success"}>{dateFormat(v, "yyyy")}</Badge></li>
-                    })}</td>
+                    <td>{dateFormat(value.dateIn, "yyyy")}</td>
                     <td>{value.total}</td>
                     <td>{value.frequency}</td>
-                    <td><Button variant={"light"} style={{fontWeight: "bold"}} onClick={async () => {
-                        await dispatch(changeSelectedInventory(array[index]))
-                        dispatch(showModal())
-                    }}><span className={"bi bi-bookmark-fill me-2"}></span> Meminjam</Button></td>
+                    <td><Row>
+
+                        {globalState.isLogin ? <>
+                                <Col><Button><span
+                                    className={"bi bi-pen-fill"} onClick={async () => {
+                                    handleShow()
+                                    changeModeToUpdate();
+                                    dispatch(clearFormLab())
+                                    dispatch(setFormUpdate(array[index]))
+                                }}></span></Button></Col><Col>
+                                <Button variant={"danger"} onClick={async () => {
+                                    await dispatch(deleteInventory(value._id))
+                                }}><span className={"bi bi-trash-fill"}></span></Button></Col></> :
+                            <Col>
+                                <Button variant={"light"} style={{fontWeight: "bold"}} onClick={async () => {
+                                    await dispatch(changeSelectedInventory(array[index]))
+                                    dispatch(showModal())
+                                }}><span className={"bi bi-bookmark-fill me-2"}></span> Meminjam</Button>
+                            </Col>}
+
+                    </Row></td>
+
                 </tr>
             }
         })
 
 
+    }
+
+    const handlerSubmitLab = async (e) => {
+        e.preventDefault();
+
+
+        if (modeFormLab === "create") {
+            await dispatch(createInventory({
+                ...state.formLab, frequency: 0,
+            }))
+        } else if (modeFormLab === "update") {
+            const payload = state.formLab
+            await dispatch(updateInventory(payload))
+        }
+        handleClose();
+        changeModeToCreate();
+        dispatch(clearFormLab())
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -80,6 +127,12 @@ export const Inventory = () => {
             </Row>
         </div>
         <h5 className={"mt-5"}>Daftar Peralatan pada Laboratorium {listLab[state.selectedLab]}</h5>
+        <Button onClick={() => {
+            dispatch(clearFormLab())
+            handleShow();
+            changeModeToCreate();
+        }} className={"mt-2"} variant={"outline-primary"}><span className={"bi bi-plus-circle-fill me-2"}></span> Tambah
+            Peralatan</Button>
         <div className={"text-center"}>
             {state.loading || globalState.loading ? <Loading/> :
                 <>
@@ -150,6 +203,7 @@ export const Inventory = () => {
                         dispatch(handlerForm({borrowedFrom: e.target.value}))
                     }} value={state.form.borrowedFrom}></FormControl>
                 </Form.Group>
+
                 <Form.Group className={"mb-3 ms-3"}>
                     <Form.Label style={{fontWeight: "bold"}}>
                         Tanggal dipinjam
@@ -158,7 +212,9 @@ export const Inventory = () => {
                         dispatch(handlerForm({dateLoan: e.target.value}))
                     }} value={state.form.dateLoan}></FormControl>
                 </Form.Group>
+
                 <Form.Group className={"mb-3 ms-3"}>
+
                     <Form.Label style={{fontWeight: "bold"}}>
                         Tanggal dikembalikan
                     </Form.Label>
@@ -177,5 +233,69 @@ export const Inventory = () => {
                 </Form.Group>
             </div>
         </ModalCustom>
+
+        <Modal show={show} onHide={handleClose}>
+            <Form onSubmit={handlerSubmitLab}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Form Inventory</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group className={"mb-3 ms-3"}>
+                        <Form.Label style={{fontWeight: "bold"}}>
+                            Nama Alat
+                        </Form.Label>
+                        <FormControl type={"text"} placeholder={"Masukkan nama"} onChange={(e) => {
+                            dispatch(handlerFormLab({name: e.target.value}));
+                        }} value={state.formLab.name} required></FormControl>
+                    </Form.Group>
+                    <Form.Group className={"mb-3 ms-3"}>
+                        <Form.Label style={{fontWeight: "bold"}}>
+                            Total
+                        </Form.Label>
+                        <FormControl type={"number"} placeholder={"Masukkan total alat"} onChange={(e) => {
+                            dispatch(handlerFormLab({total: e.target.value}))
+                        }} value={state.formLab.total} required={true}></FormControl>
+                    </Form.Group>
+                    <Form.Group className={"mb-3 ms-3"}>
+                        <Form.Label style={{fontWeight: "bold"}}>
+                            Code
+                        </Form.Label>
+                        <FormControl type={"text"} placeholder={"Masukkan code alat"} onChange={(e) => {
+                            dispatch(handlerFormLab({code: e.target.value}))
+                        }} value={state.formLab.code} required={true}></FormControl>
+                    </Form.Group>
+
+                    <Form.Group className={"mb-3 ms-3"}>
+                        <Form.Label style={{fontWeight: "bold"}}>Lab</Form.Label>
+                        <Form.Select required value={state.formLab.lab} onChange={(e) => {
+                            dispatch(handlerFormLab({lab: e.target.value}))
+                        }}>
+                            {optionLab.map((o, index) => {
+                                return <option value={o.value} disabled={o.disabled}
+                                               selected={o.selected}>{o.text}</option>
+                            })}
+                        </Form.Select>
+                    </Form.Group>
+
+                    <Form.Group className={"mb-3 ms-3"}>
+                        <Form.Label style={{fontWeight: "bold"}}>
+                            Tanggal pengadaan
+                        </Form.Label>
+                        <FormControl type={"date"} onChange={(e) => {
+                            dispatch(handlerFormLab({dateIn: e.target.value}))
+                        }}
+                                     value={state.formLab.dateIn ? dateFormat(state.formLab.dateIn, "yyyy-mm-dd") : ""}></FormControl>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button type={"submit"} variant="primary">
+                        Save
+                    </Button>
+                </Modal.Footer>
+            </Form>
+        </Modal>
     </>
 }

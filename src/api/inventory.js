@@ -11,15 +11,21 @@ class InventoryServices{
     }
 
     createOne(payload){
-        return api.post(endpoint.inventory, payload);
+        return api.post(endpoint.inventory, payload, {
+            headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
+        });
     }
 
     updateOne(id, payload){
-        return api.patch(`${endpoint.inventory}/${id}`, payload)
+        return api.patch(`${endpoint.inventory}/${id}`, payload, {
+            headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
+        })
     }
 
     deleteOne(id){
-        return api.delete(`${endpoint.inventory}/${id}`)
+        return api.delete(`${endpoint.inventory}/${id}`, {
+            headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
+        })
     }
 }
 

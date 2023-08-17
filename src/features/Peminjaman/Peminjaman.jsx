@@ -24,7 +24,7 @@ export const Peminjaman = () => {
                     <td>{value.personName}</td>
                     <td>{value.personID}</td>
                     <td>{value.borrowedFrom}</td>
-                    <td><Badge bg={"success"} className={"pb-2 pt-2 ps-4 pe-4 me-2"}>{value.inventory.name}</Badge></td>
+                    <td><Badge bg={"success"} className={"pb-2 pt-2 ps-4 pe-4 me-2"}>{value.inventory ?  value.inventory.name : ""}</Badge></td>
                     <td><Button variant={"light"} style={{fontWeight: "bold"}} onClick={async () => {
                         await dispatch(changeSelectedLoan(array[index]))
                         dispatch(showModal())
