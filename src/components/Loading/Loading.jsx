@@ -1,6 +1,6 @@
 import {Image} from "react-bootstrap";
 import loading from "../../assets/img/loading.gif"
 
-export const Loading = () =>{
-    return <Image src={loading} width={300} height={300}/>
+export const Loading = ({width = 300, height = 300}) =>{
+    return <Image src={loading} width={width} height={height}/>
 }

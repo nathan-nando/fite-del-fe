@@ -15,7 +15,9 @@ class LoanServices{
     }
 
     updateOne(id, payload){
-        return api.patch(`${endpoint.loan}/${id}`, payload)
+        return api.patch(`${endpoint.loan}/${id}`, payload, {
+            headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
+        })
     }
 
     deleteOne(id){

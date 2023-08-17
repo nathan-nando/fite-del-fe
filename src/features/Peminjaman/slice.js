@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {createLoan, fetchLoans} from "./thunk.js";
+import {createLoan, fetchLoans, updateLoan} from "./thunk.js";
 
 const initialState = {
     selectedLoan: {},
@@ -47,6 +47,17 @@ const slice = createSlice({
             state.searchedLoans = action.payload;
         })
         builder.addCase(fetchLoans.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
+        })
+
+        builder.addCase(updateLoan.pending, (state) => {
+            state.loading = true;
+        })
+        builder.addCase(updateLoan.fulfilled, (state, action) => {
+            state.loading = false;
+        })
+        builder.addCase(updateLoan.rejected, (state, action) => {
             state.loading = false;
             state.error = action.error.message;
         })

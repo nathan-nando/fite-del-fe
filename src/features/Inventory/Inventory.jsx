@@ -57,7 +57,7 @@ export const Inventory = () => {
                 dateLoan: state.form.dateLoan,
                 dateReturn: state.form.dateReturn,
                 total: Number(state.form.total),
-                status: "pending",
+                status: "menunggu",
                 inventory: state.selectedInventory._id,
             })).then(() => {
                 dispatch(hideModal())
