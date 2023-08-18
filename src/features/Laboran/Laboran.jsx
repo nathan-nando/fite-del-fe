@@ -234,9 +234,9 @@ export const Laboran = () => {
                 <Modal.Body>
                     <Form.Group className={"mb-3 ms-3"}>
                         <Form.Label style={{fontWeight: "bold"}}>
-                            Nama Alat
+                            Kondisi ketika dikembalikan
                         </Form.Label>
-                        <FormControl type={"text"} placeholder={"Masukkan nama"} onChange={(e) => {
+                        <FormControl type={"text"} placeholder={"Masukkan kondisi alat"} onChange={(e) => {
                             condition = e.target.value;
                         }}  required></FormControl>
                     </Form.Group>
