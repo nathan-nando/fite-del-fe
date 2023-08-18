@@ -3,7 +3,7 @@ import {Button, Form, Modal} from "react-bootstrap";
 import {hideModal} from "../../features/Root/slice.js";
 
 
-export const ModalCustom = ({modalTitle, modalSize, onSubmit, children}) => {
+export const ModalCustom = ({modalTitle, modalSize, onSubmit, children, withFooter = true}) => {
     const state = useSelector((state) => state.globalState);
     const dispatch = useDispatch();
 
@@ -14,10 +14,11 @@ export const ModalCustom = ({modalTitle, modalSize, onSubmit, children}) => {
             </Modal.Header>
             <Form onSubmit={onSubmit}>
                 <Modal.Body>{children}</Modal.Body>
-                <Modal.Footer>
+                {withFooter ?  <Modal.Footer>
                     <Button variant={"secondary"} onClick={() => dispatch(hideModal())}>Close</Button>
                     <Button type={"submit"} variant={"primary"}>Save</Button>
-                </Modal.Footer>
+                </Modal.Footer> : ""}
+
             </Form>
         </Modal>
     </>

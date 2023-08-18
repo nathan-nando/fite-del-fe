@@ -19,12 +19,14 @@ export const Peminjaman = () => {
 
     const tableLoan = () => {
         return state.searchedLoans.map((value, index, array) => {
-            if(value.status === state.statusLoan){
+            if (value.status === state.statusLoan) {
                 return <tr key={index}>
                     <td>{value.personName}</td>
                     <td>{value.personID}</td>
                     <td>{value.borrowedFrom}</td>
-                    <td><Badge bg={"success"} className={"pb-2 pt-2 ps-4 pe-4 me-2"}>{value.inventory ?  value.inventory.name : ""}</Badge></td>
+                    <td><Badge bg={"success"}
+                               className={"pb-2 pt-2 ps-4 pe-4 me-2"}>{value.inventory ? value.inventory.name : ""}</Badge>
+                    </td>
                     <td><Button variant={"light"} style={{fontWeight: "bold"}} onClick={async () => {
                         await dispatch(changeSelectedLoan(array[index]))
                         dispatch(showModal())
@@ -55,20 +57,27 @@ export const Peminjaman = () => {
                         </InputGroup>
                     </div>
                     <Col lg={2}>
-                    <Row>
-                        <Col lg={3} className={"mt-2"}><p style={{fontWeight:"bold"}}>Status</p> </Col>
-                        <Col><DropdownButton variant={state.statusLoan === "menunggu" ? "warning" : state.statusLoan === "disetujui" ? "success" : "danger"} title={state.statusLoan}>
-                            <Dropdown.Item onClick={()=>{
-                                dispatch(changeSelectedStatus("menunggu"))
-                            }}>Menunggu</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>{
-                                dispatch(changeSelectedStatus("ditolak"))
-                            }}>Ditolak</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>{
-                                dispatch(changeSelectedStatus("disetujui"))
-                            }}>Disetujui</Dropdown.Item>
-                        </DropdownButton></Col>
-                    </Row>
+                        <Row>
+                            <Col lg={3} className={"mt-2"}><p style={{fontWeight: "bold"}}>Status</p></Col>
+                            <Col><DropdownButton
+                                variant={state.statusLoan === "menunggu" ? "warning" : state.statusLoan === "disetujui" ? "success" : state.statusLoan === "dikembalikan" ? "primary" : "danger"}
+                                title={state.statusLoan}>
+                                <Dropdown.Item onClick={() => {
+                                    dispatch(changeSelectedStatus("menunggu"))
+                                }}>Menunggu</Dropdown.Item>
+                                <Dropdown.Item onClick={() => {
+                                    dispatch(changeSelectedStatus("ditolak"))
+                                }}>Ditolak</Dropdown.Item>
+                                <Dropdown.Item onClick={() => {
+                                    dispatch(changeSelectedStatus("disetujui"))
+                                }}>Disetujui</Dropdown.Item>
+
+                                <Dropdown.Item onClick={() => {
+                                    dispatch(changeSelectedStatus("dikembalikan"))
+                                }}>Dikembalikan</Dropdown.Item>
+                            </DropdownButton>
+                            </Col>
+                        </Row>
                     </Col>
 
                     <Table bordered className={"mt-4"}>
@@ -90,7 +99,7 @@ export const Peminjaman = () => {
 
             }
         </div>
-        {state.selectedLoan.inventory ? <ModalCustom modalTitle={`Detail Peminjaman`} modalSize={"lg"}>
+        {state.selectedLoan.inventory ? <ModalCustom modalTitle={`Detail Peminjaman`} modalSize={"lg"} withFooter={false}>
             <div className={"col-lg-12 mx-auto p-3"}>
                 <Row>
                     <Col lg={3}>
@@ -150,6 +159,9 @@ export const Peminjaman = () => {
                     </Col>
                 </Row>
 
+                {/*{Date.parse(state.selectedLoan.dateReturn) < new Date().getTime() ? "terlambat" : "ga"}*/}
+                {/*<Badge className={"mt-3"}>Terlambat</Badge>*/}
+
                 <Row className={"mt-4"}>
                     <Col lg={3}>
                         Deskripsi
@@ -159,7 +171,23 @@ export const Peminjaman = () => {
                     </Col>
                 </Row>
 
-                <Badge className={"mt-5 p-3"} style={{fontSize: 16}} bg={state.selectedLoan.status === "menunggu" ? "warning" : state.selectedLoan.status === "disetujui" ? "success" : "danger"}>{state.selectedLoan.status}</Badge>
+                {state.selectedLoan.condition ? <Row className={"mt-4"}>
+                    <Col lg={3}>
+                        Kondisi peminjaman
+                    </Col>
+                    <Col>
+                        {state.selectedLoan.condition}
+                    </Col>
+                </Row> : ""}
+
+
+                <Badge className={"mt-5 p-3 "} style={{fontSize: 16}}
+                       bg={state.selectedLoan.status === "menunggu" ? "warning" : state.selectedLoan.status === "disetujui" ? "success" : state.selectedLoan.status === "dikembalikan" ? "primary" : "danger"}>{state.selectedLoan.status}</Badge>
+
+                {state.selectedLoan.status === "disetujui" ?  <Badge className={"ms-3 mt-5 p-3"} style={{fontSize: 16}} bg={"secondary"}>Sedang dipinjam</Badge> : ""}
+
+                {(state.selectedLoan.status === "disetujui" || state.selectedLoan.status === "dikembalikan") &&  Date.parse(state.selectedLoan.dateReturn) < new Date().getTime() ?  <Badge className={"ms-3 mt-5 p-3"} style={{fontSize: 16}} bg={"danger"}>Terlambat</Badge> : ""}
+                {(state.selectedLoan.status === "disetujui" || state.selectedLoan.status === "dikembalikan") &&  Date.parse(state.selectedLoan.dateReturn) > new Date().getTime() ?  <Badge className={"ms-3 mt-5 p-3"} style={{fontSize: 16}} bg={"primary"}>Tidak terlambat</Badge> : ""}
             </div>
         </ModalCustom> : ""}
 
