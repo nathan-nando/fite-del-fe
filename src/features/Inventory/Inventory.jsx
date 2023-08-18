@@ -127,12 +127,13 @@ export const Inventory = () => {
             </Row>
         </div>
         <h5 className={"mt-5"}>Daftar Peralatan pada Laboratorium {listLab[state.selectedLab]}</h5>
-        <Button onClick={() => {
+        {globalState.isLogin ? <Button onClick={() => {
             dispatch(clearFormLab())
             handleShow();
             changeModeToCreate();
         }} className={"mt-2"} variant={"outline-primary"}><span className={"bi bi-plus-circle-fill me-2"}></span> Tambah
-            Peralatan</Button>
+            Peralatan</Button> : ""}
+
         <div className={"text-center"}>
             {state.loading || globalState.loading ? <Loading/> :
                 <>
